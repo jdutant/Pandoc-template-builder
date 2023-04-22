@@ -103,7 +103,7 @@ function importPartials(template)
                 options.capture
             ))
             -- empty partials return nothing
-            return import:match('^%s*$') and '' 
+            return import:match('^%s*$') and ''
                 or import:match('.*\n$') and import
                 or import .. '\n'
         end
