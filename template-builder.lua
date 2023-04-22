@@ -107,7 +107,14 @@ end
 local function readCLIArgs(args)
     local opts = nil
     while #args > 0 do
-        if args[1] == '-o' and args[2] then
+        if args[1] == '-h' or args[1] == '--help' then
+            io.stderr:write("Pandoc template builder. Basic Usage:\n"
+            .."    lua template-builder.lua -i template.fmt\n"
+            .."    pandoc lua template-builder.lua -i template.fmt -o compiled.fmt\n"
+                .."Without -o flag the compiled template is printed to stdout.\n"
+            )
+            return {}
+        elseif args[1] == '-o' and args[2] then
             opts = opts and opts or {}
             opts.output = args[2]
             table.remove(args, 1)
@@ -125,7 +132,7 @@ local function readCLIArgs(args)
             table.remove(args, 1)
         else
             message('WARNING', "Bad argument "..args[1]..".\n"
-                .."Syntax: -i source.file -o output.file")
+                .."Use -h or --help to print help")
             table.remove(args, 1)
         end
     end
@@ -156,9 +163,11 @@ function importPartials(template)
 end
 
 OPTIONS = readCLIArgs(arg)
-result = importPartials(OPTIONS.input_file)
-if OPTIONS.output then
-    writeToFile(result, OPTIONS.output)
-else
-    io.stdout:write(result)
+if OPTIONS.input_file then
+    result = importPartials(OPTIONS.input_file)
+    if OPTIONS.output then
+        writeToFile(result, OPTIONS.output)
+    else
+        io.stdout:write(result)
+    end
 end

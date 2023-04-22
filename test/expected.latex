@@ -9,7 +9,9 @@ $for(item)$
 $it.variable$$sep$, 
 $endfor$
 A third partial file.
-Try again with an alternative syntax.
+
+Try again with an alternative syntax:
+
 This is a level 1 partial.
 This is a subpartial.
 This is a subsubpartial.
