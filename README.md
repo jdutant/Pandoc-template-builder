@@ -1,6 +1,12 @@
 # Pandoc template builder
 
+[![GitHub build status][CI badge]][CI workflow]
+
 Lua script to build a single Pandoc template file from partials.
+
+[CI badge]: https://img.shields.io/github/actions/workflow/status/jdutant/Pandoc-template-builder/ci.yaml?branch=main
+[CI workflow]: https://github.com/jdutant/Pandoc-template-builder/actions/workflows/ci.yaml
+
 
 ## Overview
 
