@@ -1,4 +1,4 @@
-$first-partial.latex()$
+$ first-partial.latex() $
 $if(condition)$
 $some$$variable$
 $endif$
@@ -6,4 +6,16 @@ $secondpartial.latex()$
 $for(item)$
 $it.variable$$sep$, 
 $endfor$
-$third_partial.latex()$
+$  third_partial.latex()  $
+
+Try again with an alternative syntax:
+
+${first-partial.latex()}
+$if(condition)$
+$some$$variable$
+$endif$
+${  secondpartial.latex()  }
+$for(item)$
+$it.variable$$sep$, 
+$endfor$
+${ third_partial.latex() }

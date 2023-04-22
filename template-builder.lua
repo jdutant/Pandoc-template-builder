@@ -4,6 +4,38 @@ Copyright 2023 Julien Dutant. MIT License. See LICENSE file for details.
 
 ]]
 
+--- # Global variables
+
+---@class Matcher A pattern / capture pair to pick up partials commands
+---@field pattern function returns a pattern for a given extension
+---@field capture function returns a corresponding capture pattern
+
+---@alias MATCHERS Matcher[] 
+MATCHERS = {
+    -- pattern 1: $alphnum[-alphnum][_alphanum].ext()$ strings
+    {
+        pattern = function(ext)
+            return '%$%s*[%w-_]+%'..ext..'%(%)%s*%$\n?'
+        end,
+        capture = function(ext)
+            return '%$%s*([%w-_]+%'..ext..')%(%)%s*%$'
+        end
+    },
+    -- pattern 2: ${alphnum[-alphnum][_alphanum].ext()} strings
+    {
+        pattern = function(ext)
+            return '%${%s*[%w-_]+%'..ext..'%(%)%s*}\n?'
+        end,
+        capture = function(ext)
+            return '%${%s*([%w-_]+%'..ext..')%(%)%s*}\n?'
+        end
+    }
+}
+
+OPTIONS = {}
+
+
+
 -- pattern to capture partial calls
 -- assumes $alphnum[-alphnum].ext()$ strings
 -- take out EOF if present
@@ -13,6 +45,8 @@ end
 CAPTURE = function(ext)
     return '%$([%w-_]+%'..ext..')%(%)%$'
 end
+
+--- # Helper functions
 
 ---message: send message to std_error
 ---comment
@@ -66,6 +100,10 @@ function writeToFile(contents, filepath)
   end
 end
 
+---comment
+---@param args table Lua's argument table
+---@return table options map with `input_dir`, `input_file`, 
+---                     `extension` and (maybe) `output` keys.
 local function readCLIArgs(args)
     local opts = nil
     while #args > 0 do
@@ -96,27 +134,31 @@ end
 
 function importPartials(template)
 
-    return readFile(path.join{ options.input_dir, template }):gsub(
-        options.pattern,
-        function(partial_line)
-            local import = importPartials(partial_line:match(
-                options.capture
-            ))
-            -- empty partials return nothing
-            return import:match('^%s*$') and ''
-                or import:match('.*\n$') and import
-                or import .. '\n'
-        end
-    )
-    
+    local result = readFile(path.join{ OPTIONS.input_dir, template })
+
+    for _,matcher in ipairs(MATCHERS) do
+        local pattern = matcher.pattern(OPTIONS.extension)
+        local capture = matcher.capture(OPTIONS.extension)
+        result = result:gsub( pattern, 
+            function(line)
+                local import = importPartials(line:match(capture))
+                -- empty partials return nothing
+                -- avoid duplicate EOL
+                return import:match('^%s*$') and ''
+                    or import:match('.*\n$') and import
+                    or import .. '\n'
+            end
+        )
+    end
+
+    return result
+
 end
 
-options = readCLIArgs(arg)
-options.pattern = PATTERN(options.extension)
-options.capture = CAPTURE(options.extension)
-result = importPartials(options.input_file)
-if options.output then
-    writeToFile(result, options.output)
+OPTIONS = readCLIArgs(arg)
+result = importPartials(OPTIONS.input_file)
+if OPTIONS.output then
+    writeToFile(result, OPTIONS.output)
 else
     io.stdout:write(result)
 end

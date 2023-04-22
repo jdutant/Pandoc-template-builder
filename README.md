@@ -21,12 +21,15 @@ It looks for partial commands such as:
 
 ```
 $styles.html()$
+
+${ author_block.html() }
 ```
 
 and imports them into a built template, which can be saved in a file
 or printed out to stdout.
 
-* The `${...}` syntax, as in `${styles.html()}` isn't supported.
+* Partial commands must occupy an entire line.
+* Partials files and main template file must all have the same extension.
 * Partials applied to variables, as in `$variable:partial()$` are not supported.
 * The script is recursive: partials within partials are imported.
 * As per Pandoc manual, partial files must be in the same folder as the main template file.
