@@ -1,0 +1,11 @@
+This is a level 1 partial.
+This is a subpartial.
+This is a subsubpartial.
+$if(condition)$
+$some$$variable$
+$endif$
+A second partial file.
+$for(item)$
+$it.variable$$sep$, 
+$endfor$
+A third partial file.

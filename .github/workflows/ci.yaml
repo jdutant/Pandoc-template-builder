@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  # Run on all pull requests that change code.
+  pull_request:
+    paths-ignore:
+      - 'README.md'
+      - Makefile
+      - LICENSE
+      - .editorconfig
+  # Run every time a code change is pushed.
+  push:
+    paths-ignore:
+      - 'README.md'
+      - Makefile
+      - LICENSE
+      - .editorconfig
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        pandoc:
+          - latest
+
+    container:
+      image: pandoc/core:${{ matrix.pandoc }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: apk add make
+
+      - name: Test
+        run: make test

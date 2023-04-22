@@ -1,0 +1,9 @@
+$first-partial.latex()$
+$if(condition)$
+$some$$variable$
+$endif$
+$secondpartial.latex()$
+$for(item)$
+$it.variable$$sep$, 
+$endfor$
+$third_partial.latex()$
